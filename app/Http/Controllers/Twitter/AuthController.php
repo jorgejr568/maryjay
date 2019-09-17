@@ -50,12 +50,6 @@ class AuthController extends Controller
     }
 
     public function success(){
-        $res = $this->cb->search_tweets('q=globo&count=100');
-
-        dd($res->statuses[0]);
-        $res = $this->cb->statuses_show_ID('id='.$res->statuses[0]->id);
-
-        dd(Carbon::createFromTimeString($res->created_at),$res);
         return response()->json([
             'success' => true,
             'auth' => $this->getTwitterAuthCache()

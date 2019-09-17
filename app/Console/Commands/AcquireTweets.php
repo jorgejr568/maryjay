@@ -3,6 +3,8 @@
 namespace App\Console\Commands;
 
 use App\Core\TwitterAuth;
+use App\Exceptions\TwitterAuthFailed;
+use App\Exceptions\TwitterRequestFailed;
 use App\Jobs\GetDataFromTweet;
 use App\Tweet;
 use Carbon\Carbon;
@@ -40,51 +42,78 @@ class AcquireTweets extends Command
      * Execute the console command.
      *
      * @return mixed
+     * @throws TwitterAuthFailed
      */
     public function handle()
     {
+        $minutesDispatch = [0,15,30,45];
+        $currentHour = now()->startOfHour();
+        $fromHour = $currentHour->copy()->subHour();
+
             foreach ($this->argument('query') as $query) {
                 $this->info("GETTING TWEETS FROM {$query}");
 
                 $count = 100;
-                do {
-                    try {
-                        $lastTweetIdOfQuery = Tweet::where('query', $query)->orderBy('created_at')->select('id', 'created_at')->first();
+                $breakDoWhile = false;
+                $maxTweetId = null;
 
+                do {
+                    $continue = false;
+                    try {
                         $res = $this->cb->search_tweets(http_build_query([
                             'q' => $query,
                             'count' => $count,
-                            'until' => now()->format('Y-m-d'),
-                            'max_id' => $lastTweetIdOfQuery->id ?? null
+//                            'until' => now()->format('Y-m-d'),
+                            'max_id' => $maxTweetId ?? null,
                         ]));
 
+                        if($res->httpstatus != 200) throw new TwitterRequestFailed(
+                            json_encode($res->errors),
+                            $res->httpstatus
+                            );
+
                         echo PHP_EOL;
-
-                        if($res->httpstatus == 429) sleep(60 * 5);
-
-                        $this->alert($lastTweetIdOfQuery->id . " - " . $lastTweetIdOfQuery->created_at->format('d/m/Y H:i:s'));
+//                        dd($res);
 
                         $progress = $this->output->createProgressBar(count($res->statuses));
 
                         foreach ($res->statuses as $status) {
+                            $tweetCreatedAt = Carbon::createFromTimeString($status->created_at)->subHours(3);
+                            if($tweetCreatedAt->lt($fromHour)){
+                                $breakDoWhile = true;
+                                break;
+                            }
+                            $this->info($tweetCreatedAt);
+
                             if (!Tweet::where('id', $status->id)->exists()) {
                                 $tweet = Tweet::create([
                                     'id' => $status->id,
-                                    'created_at' => Carbon::createFromTimeString($status->created_at),
+                                    'created_at' => $tweetCreatedAt,
                                     'data' => NULL,
                                     'user_id' => $status->user->id,
                                     'query' => $query
                                 ]);
 
-                                GetDataFromTweet::dispatch($tweet)->delay(now()->addSeconds(rand(10, 120)));
+                                $maxTweetId = $tweet->id;
+
+                                GetDataFromTweet::dispatch($tweet)->delay(now()->addMinutes($minutesDispatch[rand(0,count($minutesDispatch) - 1)]));
                             }
                             $progress->advance();
                         }
-                    }catch (\Exception $e){
-                        if($res->httpstatus == 429) sleep(60 * 5);
-                        else break;
+
+                        if($breakDoWhile){
+                            break;
+                        }
+
+                    }catch (TwitterRequestFailed $e){
+                        if($e->getCode() == 429) {
+                            sleep(60 * 5);
+                            $continue = true;
+                        }
+                        else throw new TwitterAuthFailed("Twitter Auth Failed",$e->getCode(),$e);
+;
                     }
-                } while (count($res->statuses) == $count);
+                } while ($continue || count($res->statuses) == $count);
                 $progress->finish();
             }
     }

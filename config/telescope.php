@@ -125,20 +125,20 @@ return [
         Watchers\LogWatcher::class => env('TELESCOPE_LOG_WATCHER', true),
         Watchers\MailWatcher::class => env('TELESCOPE_MAIL_WATCHER', true),
 
-        Watchers\ModelWatcher::class => [
-            'enabled' => env('TELESCOPE_MODEL_WATCHER', true),
-            'events' => ['eloquent.*'],
-        ],
+//        Watchers\ModelWatcher::class => [
+//            'enabled' => env('TELESCOPE_MODEL_WATCHER', true),
+//            'events' => ['eloquent.*'],
+//        ],
 
         Watchers\NotificationWatcher::class => env('TELESCOPE_NOTIFICATION_WATCHER', true),
 
-        Watchers\QueryWatcher::class => [
-            'enabled' => env('TELESCOPE_QUERY_WATCHER', true),
-            'ignore_packages' => true,
-            'slow' => 100,
-        ],
+//        Watchers\QueryWatcher::class => [
+//            'enabled' => env('TELESCOPE_QUERY_WATCHER', true),
+//            'ignore_packages' => true,
+//            'slow' => 100,
+//        ],
 
-        Watchers\RedisWatcher::class => env('TELESCOPE_REDIS_WATCHER', true),
+//        Watchers\RedisWatcher::class => env('TELESCOPE_REDIS_WATCHER', true),
 
         Watchers\RequestWatcher::class => [
             'enabled' => env('TELESCOPE_REQUEST_WATCHER', true),

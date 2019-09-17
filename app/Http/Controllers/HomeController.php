@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Tweet;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class HomeController extends Controller
 {
@@ -23,6 +25,12 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return view('home');
+        return view('home',[
+            "acquisitions" => [
+                "total" => Tweet::count(),
+                "processed" => Tweet::whereNotNull('data')->count(),
+                "per_query" => Tweet::select(['query',DB::raw('COUNT(*) as count')])->groupBy('query')->orderBy('query')->get()
+            ]
+        ]);
     }
 }

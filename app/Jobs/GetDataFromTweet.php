@@ -3,6 +3,8 @@
 namespace App\Jobs;
 
 use App\Core\TwitterAuth;
+use App\Exceptions\TwitterAuthFailed;
+use App\Exceptions\TwitterRequestFailed;
 use App\Tweet;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
@@ -17,6 +19,8 @@ class GetDataFromTweet implements ShouldQueue
      * @var Tweet
      */
     private $tweet;
+
+    public $timeout = 60 * 20;
 
     /**
      * Create a new job instance.
@@ -34,11 +38,25 @@ class GetDataFromTweet implements ShouldQueue
      * Execute the job.
      *
      * @return void
+     * @throws TwitterAuthFailed
      */
     public function handle()
     {
-        $res = $this->cb->statuses_show_ID('id='.$this->tweet->id);
+        do {
+            try {
+                $res = $this->cb->statuses_show_ID('id=' . $this->tweet->id);
 
+                if($res->httpstatus == 200){
+                    break;
+                }else throw new TwitterRequestFailed("Twitter Request Failed",$res->httpstatus);
+
+            }catch (TwitterRequestFailed $e){
+                if($e->getCode() == 429) {
+                    sleep(60 * 5);
+                }
+                else throw new TwitterAuthFailed("Twitter Auth Failed",$e->getCode(),$e);
+            }
+        }while(true);
         $this->tweet->update([
             'data' => json_encode($res)
         ]);

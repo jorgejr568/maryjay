@@ -26,7 +26,7 @@ class AuthController extends Controller
 
         $this->cb->setToken($reply->oauth_token, $reply->oauth_token_secret);
 
-        Cache::put(self::TWITTER_AUTH_CACHE_NAME,[
+        Cache::put($this->TWITTER_AUTH_CACHE_NAME,[
             'token' => $reply->oauth_token,
             'secret' => $reply->oauth_token_secret
         ],now()->addYear());
@@ -41,7 +41,7 @@ class AuthController extends Controller
             'oauth_verifier' => $request->input('oauth_verifier')
         ]);
 
-        Cache::put(self::TWITTER_AUTH_CACHE_NAME,[
+        Cache::put($this->TWITTER_AUTH_CACHE_NAME,[
             'token' => $reply->oauth_token,
             'secret' => $reply->oauth_token_secret,
         ],now()->addYear());

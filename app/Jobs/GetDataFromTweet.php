@@ -31,7 +31,6 @@ class GetDataFromTweet implements ShouldQueue
     {
         //
         $this->tweet = $tweet;
-        $this->bootTwitterAuth();
     }
 
     /**
@@ -42,6 +41,7 @@ class GetDataFromTweet implements ShouldQueue
      */
     public function handle()
     {
+        $this->bootTwitterAuth();
         do {
             try {
                 $res = $this->cb->statuses_show_ID('id=' . $this->tweet->id);

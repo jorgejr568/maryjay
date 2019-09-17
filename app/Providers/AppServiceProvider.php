@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use Codebird\Codebird;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -23,6 +24,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        Codebird::setConsumerKey(config('services.twitter.key'), config('services.twitter.secret'));
     }
 }

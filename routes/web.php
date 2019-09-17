@@ -11,8 +11,16 @@
 |
 */
 
-Route::get('/', function () {
+use Codebird\Codebird;
+
+Route::get('/',function (){
     return view('welcome');
+});
+
+Route::group(['prefix' => 'twitter','namespace' => 'Twitter'],function (){
+    Route::get('/', "AuthController@redirect")->name('redirect');
+    Route::get('/callback', "AuthController@callback")->name('callback');
+    Route::get('/success', "AuthController@success")->name('success');
 });
 
 Auth::routes(['register' => false]);

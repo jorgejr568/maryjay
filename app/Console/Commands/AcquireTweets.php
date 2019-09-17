@@ -96,7 +96,7 @@ class AcquireTweets extends Command
 
                                 $maxTweetId = $tweet->id;
 
-                                GetDataFromTweet::dispatch($tweet)->delay(now()->addMinutes($minutesDispatch[rand(0,count($minutesDispatch) - 1)]));
+                                GetDataFromTweet::dispatch($tweet);
                             }
                             $progress->advance();
                         }

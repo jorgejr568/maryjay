@@ -92,7 +92,7 @@ class AcquireTweets extends Command
                                     'data' => NULL,
                                     'user_id' => $status->user->id,
                                     'query' => $query,
-                                    'pre_data' => $status
+                                    'pre_data' => json_encode($status)
                                 ]);
 
                                 $maxTweetId = $tweet->id;

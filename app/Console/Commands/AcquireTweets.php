@@ -95,10 +95,11 @@ class AcquireTweets extends Command
                                     'pre_data' => json_encode($status)
                                 ]);
 
-                                $maxTweetId = $tweet->id;
-
                                 GetDataFromTweet::dispatch($tweet);
                             }
+
+                            $maxTweetId = $status->id;
+
                             $progress->advance();
                         }
 

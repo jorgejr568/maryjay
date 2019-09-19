@@ -91,7 +91,8 @@ class AcquireTweets extends Command
                                     'created_at' => $tweetCreatedAt,
                                     'data' => NULL,
                                     'user_id' => $status->user->id,
-                                    'query' => $query
+                                    'query' => $query,
+                                    'pre_data' => $status
                                 ]);
 
                                 $maxTweetId = $tweet->id;

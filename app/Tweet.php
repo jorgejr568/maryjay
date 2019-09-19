@@ -20,6 +20,7 @@ class Tweet extends Model
         'user_id',
         'data',
         'query',
-        'created_at'
+        'created_at',
+        'pre_data'
     ];
 }

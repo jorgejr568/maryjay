@@ -28,7 +28,7 @@ class HomeController extends Controller
         return view('home',[
             "acquisitions" => [
                 "total" => Tweet::count(),
-                "processed" => Tweet::whereNotNull('data')->count(),
+//                "processed" => Tweet::whereNotNull('data')->count(),
                 "per_query" => Tweet::select(['query',DB::raw('COUNT(*) as count')])->groupBy('query')->orderBy('query')->get()
             ]
         ]);

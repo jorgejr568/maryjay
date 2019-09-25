@@ -13,13 +13,6 @@
                         {{ number_format($acquisitions['total'],0,'.','.') }}
                     </h3>
 
-                    <hr>
-
-                    <h2>Em processamento</h2>
-                    <h3 class="badge badge-warning" style="font-size: 25px">
-                        {{ number_format($acquisitions['total'] - $acquisitions['processed'],0,'.','.') }}
-                    </h3>
-
                 </div>
             </div>
         </div>

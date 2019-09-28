@@ -5,18 +5,12 @@ namespace App\Console\Commands;
 use App\Core\TwitterAuth;
 use App\Exceptions\TwitterAuthFailed;
 use App\Exceptions\TwitterRequestFailed;
-use App\Jobs\GetDataFromTweet;
 use App\Tweet;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 
 class AcquireTweets extends Command
 {
-    const VALID_PERIODS = [
-        "hour",
-        "day",
-        "week"
-    ];
     use TwitterAuth;
     /**
      * The name and signature of the console command.
@@ -120,17 +114,10 @@ class AcquireTweets extends Command
                                 $tweet = Tweet::create([
                                     'id' => $status->id,
                                     'created_at' => $tweetCreatedAt,
-                                    'data' => NULL,
+                                    'data' => json_encode($status),
                                     'user_id' => $status->user->id,
-                                    'query' => $query,
-                                    'pre_data' => json_encode($status)
+                                    'query' => $query
                                 ]);
-
-                                /**
-                                 * getting data from tweet if truncate added to a queue job
-                                 * u don't really need to do this if u don't want to
-                                 */
-                                GetDataFromTweet::dispatch($tweet);
                             }
 
                             // setting maxTweetId as current tweet id

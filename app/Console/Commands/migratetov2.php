@@ -50,7 +50,7 @@ class MigrateToV2 extends Command
 
         foreach ($clearTables as $clearTable) DB::statement("DELETE FROM  ".$clearTable." WHERE 1");
 
-        $perPage = 5000;
+        $perPage = 1000;
 
         $tweets = Tweet::paginate($perPage);
 
@@ -77,6 +77,7 @@ class MigrateToV2 extends Command
                 $progressBar->advance();
             }
 
+            $tweets = null;
             $tweets = Tweet::simplePaginate($perPage,['*'],'page',++$currentPage);
         }
 

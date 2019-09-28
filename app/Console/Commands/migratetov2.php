@@ -48,7 +48,7 @@ class MigrateToV2 extends Command
             'telescope_monitoring'
         ];
 
-        foreach ($clearTables as $clearTable) DB::table($clearTable)->truncate();
+        foreach ($clearTables as $clearTable) DB::statement("DELETE FROM  ".$clearTable." WHERE 1");
 
         $perPage = 5000;
 

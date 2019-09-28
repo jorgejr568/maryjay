@@ -12,13 +12,18 @@ use Illuminate\Console\Command;
 
 class AcquireTweets extends Command
 {
+    const VALID_PERIODS = [
+        "hour",
+        "day",
+        "week"
+    ];
     use TwitterAuth;
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'acquire_tweets {query*}';
+    protected $signature = 'acquire_tweets {--period=hour} {query*}';
 
     /**
      * The console command description.
@@ -46,11 +51,26 @@ class AcquireTweets extends Command
      */
     public function handle()
     {
-        //** Get current hour */
-        $currentHour = now()->startOfHour();
-        /**  Get hour before */
-        $fromHour = $currentHour->copy()->subHour();
-        // We will get tweets only until $fromHour
+        /**
+         * Get period before
+         * We will get tweets only until $fromPeriod
+        */
+            switch ($this->option('period')){
+                case 'hour':
+                    $fromPeriod = now()->subHour()->startOfHour();
+                    break;
+                case 'day':
+                    $fromPeriod = now()->subDay()->startOfDay();
+                    break;
+                case 'week':
+                    $fromPeriod = now()->subWeek()->startOfWeek();
+                    break;
+                default:
+                    $this->error("INVALID PERIOD");
+                    die();
+                    // Finishing process
+            }
+
 
             // Foreach query passed as argument to command | globo havan natura
             foreach ($this->argument('query') as $query) {
@@ -58,7 +78,7 @@ class AcquireTweets extends Command
                 $this->info("GETTING TWEETS FROM {$query}");
                 // Number of tweets that we gonna get in one request
                 $count = 100;
-                // Variable to control if we are getting only tweets until $fromHour
+                // Variable to control if we are getting only tweets until $fromPeriod
                 $breakDoWhile = false;
                 // Variable to paginate correctly twitter api
                 $maxTweetId = null;
@@ -87,8 +107,8 @@ class AcquireTweets extends Command
                             // parsing tweet created_at property to an Carbon object that we can handle easily | Sub hours because value comes in GMT
                             $tweetCreatedAt = Carbon::createFromTimeString($status->created_at)->subHours(3);
 
-                            // checking if tweet created_at is less than $fromHour
-                            if($tweetCreatedAt->lt($fromHour)){
+                            // checking if tweet created_at is less than $fromPeriod
+                            if($tweetCreatedAt->lt($fromPeriod)){
                                 // getting out from foreach and do while
                                 $breakDoWhile = true;
                                 break;

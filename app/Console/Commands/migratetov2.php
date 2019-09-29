@@ -50,42 +50,28 @@ class MigrateToV2 extends Command
 
         foreach ($clearTables as $clearTable) DB::statement("DELETE FROM  ".$clearTable." WHERE 1");
 
+
+        DB::statement('UPDATE tweets SET data = pre_data,pre_data=NULL WHERE data IS NULL AND pre_data IS NOT NULL');
+        DB::statement('UPDATE tweets SET pre_data = NULL WHERE data IS NOT NULL');
+
         $perPage = (int) $this->option('per-page');
 
-        $tweets = DB::table('tweets')->paginate($perPage);
+        $tweets = DB::table('tweets')->whereNull(['data','pre_data'])->paginate($perPage);
 
 
         $lastPage = $tweets->lastPage();
 
         $progress = $this->output->createProgressBar($tweets->total());
 
+
         for($currentPage = 1;$currentPage <= $lastPage;) {
             foreach ($tweets->items() as $tweet){
-                if(!is_null($tweet->data)){
-                    DB
-                        ::table('tweets')
-                        ->where('id',$tweet->id)
-                        ->update([
-                            'pre_data' => NULL
-                        ]);
-                }else{
-                    if(!is_null($tweet->pre_data)){
-                        DB
-                            ::table('tweets')
-                            ->where('id',$tweet->id)
-                            ->update([
-                                'data' => $tweet->pre_data,
-                                'pre_data' => NULL
-                            ]);
-                    }else{
-                        GetDataFromTweet::dispatch(Tweet::find($tweet->id));
-                    }
-                }
+                GetDataFromTweet::dispatch(Tweet::find($tweet->id));
                 $progress->advance();
             }
 
             $tweets = null;
-            $tweets = DB::table('tweets')->simplePaginate($perPage,['*'],'page',++$currentPage);
+            $tweets = DB::table('tweets')->whereNull(['data','pre_data'])->simplePaginate($perPage,['*'],'page',++$currentPage);
         }
         $progress->finish();
     }

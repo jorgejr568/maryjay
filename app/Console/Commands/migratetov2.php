@@ -14,7 +14,7 @@ class MigrateToV2 extends Command
      *
      * @var string
      */
-    protected $signature = 'migrate:v2';
+    protected $signature = 'migrate:v2 {--per-page=1000}';
 
     /**
      * The console command description.
@@ -50,7 +50,7 @@ class MigrateToV2 extends Command
 
         foreach ($clearTables as $clearTable) DB::statement("DELETE FROM  ".$clearTable." WHERE 1");
 
-        $perPage = 1500;
+        $perPage = (int) $this->option('per-page');
 
         $tweets = DB::table('tweets')->paginate($perPage);
 

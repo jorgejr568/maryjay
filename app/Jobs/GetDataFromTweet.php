@@ -54,7 +54,12 @@ class GetDataFromTweet implements ShouldQueue
                 if($e->getCode() == 429) {
                     sleep(60 * 5);
                 }
-                else throw new TwitterAuthFailed(json_encode($res),$e->getCode(),$e);
+                else {
+                    if (in_array($e->getCode(), [144, 179])) {
+                        $this->tweet->delete();
+                    }
+                    throw new TwitterAuthFailed(json_encode($res), $e->getCode(), $e);
+                }
             }
         }while(true);
         $this->tweet->update([

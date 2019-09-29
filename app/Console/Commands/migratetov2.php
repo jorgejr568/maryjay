@@ -52,32 +52,41 @@ class MigrateToV2 extends Command
 
         $perPage = 1500;
 
-        $tweets = Tweet::paginate($perPage);
+        $tweets = DB::table('tweets')->paginate($perPage);
 
 
         $lastPage = $tweets->lastPage();
 
+        $progress = $this->output->createProgressBar($tweets->total());
+
         for($currentPage = 1;$currentPage <= $lastPage;) {
             foreach ($tweets->items() as $tweet){
                 if(!is_null($tweet->data)){
-                    $tweet->update([
-                        'pre_data' => NULL
-                    ]);
-                }else{
-                    if(!is_null($tweet->pre_data)){
-                        $tweet->update([
-                            'data' => $tweet->pre_data,
+                    DB
+                        ::table('tweets')
+                        ->where('id',$tweet->id)
+                        ->update([
                             'pre_data' => NULL
                         ]);
+                }else{
+                    if(!is_null($tweet->pre_data)){
+                        DB
+                            ::table('tweets')
+                            ->where('id',$tweet->id)
+                            ->update([
+                                'data' => $tweet->pre_data,
+                                'pre_data' => NULL
+                            ]);
                     }else{
-                        GetDataFromTweet::dispatch($tweet);
+                        GetDataFromTweet::dispatch(Tweet::find($tweet->id));
                     }
                 }
+                $progress->advance();
             }
 
             $tweets = null;
-            $tweets = Tweet::simplePaginate($perPage,['*'],'page',++$currentPage);
+            $tweets = DB::table('tweets')->simplePaginate($perPage,['*'],'page',++$currentPage);
         }
-
+        $progress->finish();
     }
 }

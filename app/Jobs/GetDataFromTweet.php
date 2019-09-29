@@ -54,7 +54,7 @@ class GetDataFromTweet implements ShouldQueue
                 if($e->getCode() == 429) {
                     sleep(60 * 5);
                 }
-                else throw new TwitterAuthFailed("Twitter Auth Failed",$e->getCode(),$e);
+                else throw new TwitterAuthFailed(json_encode($res),$e->getCode(),$e);
             }
         }while(true);
         $this->tweet->update([

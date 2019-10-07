@@ -8,7 +8,21 @@
                     <div class="card-header">Criar dashboard</div>
 
                     <div class="card-body">
-                        <create-dashboard :queries="{{json_encode($queries)}}"></create-dashboard>
+                        @if($errors->any())
+                            @foreach($errors->all() as $error)
+                                <div class="row">
+                                    <div class="col">
+                                        <div class="alert alert-danger">
+                                            {{$error}}
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        @endif
+                        <form action="{{route('dashboards.store')}}" method="post">
+                            <create-dashboard :queries="{{json_encode($queries)}}"></create-dashboard>
+                            {{csrf_field()}}
+                        </form>
                     </div>
                 </div>
             </div>

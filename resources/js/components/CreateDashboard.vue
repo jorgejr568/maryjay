@@ -4,7 +4,7 @@
             <div class="col">
                 <div class="form-group">
                     <label for="name" class="control-label">Nome: </label>
-                    <input v-model="dashboard.name" type="text" class="form-control" name="name" id="name">
+                    <input v-model="dashboard.name" type="text" class="form-control" name="name" id="name" required>
                 </div>
             </div>
         </div>
@@ -12,7 +12,7 @@
             <div class="col">
                 <div class="form-group">
                     <label for="queries" class="control-label">Queries: </label>
-                    <select v-model="dashboard.queries" name="queries" id="queries" multiple class="form-control">
+                    <select v-model="dashboard.queries" name="queries[]" id="queries" multiple class="form-control" required>
                         <option :value="query" v-for="query in queries">{{ query }}</option>
 
                     </select>
@@ -31,7 +31,7 @@
             <div class="col-6">
                 <div class="form-group">
                     <label for="period_to" class="control-label">Até: </label>
-                    <input v-model="dashboard.period_to" id="period_to" type="date" class="form-control">
+                    <input v-model="dashboard.period_to" id="period_to" name="period_to" type="date" class="form-control">
                 </div>
             </div>
         </div>
@@ -57,7 +57,7 @@
                             </select>
                         </td>
                         <td>
-                            <input type="text" class="form-control" v-model="metadata_rule.query">
+                            <input type="text" class="form-control" v-model="metadata_rule.query" name="metadata_rule_query[]">
                         </td>
                     </tr>
                     </tbody>
@@ -65,11 +65,16 @@
                     <tfoot>
                     <tr>
                         <td class="text-right" colspan="2">
-                            <button class="btn btn-success btn-xs" type="button" @click="dashboard.metadata_rules.push({metadata: null,rule: null})">Adicionar</button>
+                            <button class="btn btn-outline-dark btn-sm" type="button" @click="dashboard.metadata_rules.push({metadata: null,query: null})">Adicionar</button>
                         </td>
                     </tr>
                     </tfoot>
                 </table>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col text-right">
+                <button class="btn btn-success" type="submit">SALVAR</button>
             </div>
         </div>
     </div>

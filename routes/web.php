@@ -27,6 +27,4 @@ Auth::routes(['register' => true]);
 
 Route::get('/home', 'HomeController@index')->name('home');
 
-Route::group(['prefix' => 'dashboards','as' => 'dashboards.'],function(){
-    Route::get('/create','DashboardController@create')->name('create');
-});
+Route::resource('/dashboards',"DashboardController");

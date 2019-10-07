@@ -59,9 +59,11 @@
                                         + Adicionar novo
                                     </a>
 
-                                    <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-                                        @csrf
-                                    </form>
+                                    @foreach(App\Dashboard::select(['id','name'])->orderBy('name')->get() as $dashboard)
+                                        <a class="dropdown-item" href="{{route('dashboards.show',['dashboard' => $dashboard->id])}}">
+                                            {{ $dashboard->name }}
+                                        </a>
+                                    @endforeach
                                 </div>
                             </li>
 

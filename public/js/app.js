@@ -1916,6 +1916,11 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "CreateDashboard",
@@ -37283,7 +37288,7 @@ var render = function() {
               }
             ],
             staticClass: "form-control",
-            attrs: { type: "text", name: "name", id: "name" },
+            attrs: { type: "text", name: "name", id: "name", required: "" },
             domProps: { value: _vm.dashboard.name },
             on: {
               input: function($event) {
@@ -37319,7 +37324,12 @@ var render = function() {
                 }
               ],
               staticClass: "form-control",
-              attrs: { name: "queries", id: "queries", multiple: "" },
+              attrs: {
+                name: "queries[]",
+                id: "queries",
+                multiple: "",
+                required: ""
+              },
               on: {
                 change: function($event) {
                   var $$selectedVal = Array.prototype.filter
@@ -37404,7 +37414,7 @@ var render = function() {
               }
             ],
             staticClass: "form-control",
-            attrs: { id: "period_to", type: "date" },
+            attrs: { id: "period_to", name: "period_to", type: "date" },
             domProps: { value: _vm.dashboard.period_to },
             on: {
               input: function($event) {
@@ -37489,7 +37499,7 @@ var render = function() {
                       }
                     ],
                     staticClass: "form-control",
-                    attrs: { type: "text" },
+                    attrs: { type: "text", name: "metadata_rule_query[]" },
                     domProps: { value: metadata_rule.query },
                     on: {
                       input: function($event) {
@@ -37512,13 +37522,13 @@ var render = function() {
                 _c(
                   "button",
                   {
-                    staticClass: "btn btn-success btn-xs",
+                    staticClass: "btn btn-outline-dark btn-sm",
                     attrs: { type: "button" },
                     on: {
                       click: function($event) {
                         return _vm.dashboard.metadata_rules.push({
                           metadata: null,
-                          rule: null
+                          query: null
                         })
                       }
                     }
@@ -37530,7 +37540,9 @@ var render = function() {
           ])
         ])
       ])
-    ])
+    ]),
+    _vm._v(" "),
+    _vm._m(1)
   ])
 }
 var staticRenderFns = [
@@ -37543,6 +37555,20 @@ var staticRenderFns = [
         _c("th", [_vm._v("Metadata")]),
         _vm._v(" "),
         _c("th", [_vm._v("Query")])
+      ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "row" }, [
+      _c("div", { staticClass: "col text-right" }, [
+        _c(
+          "button",
+          { staticClass: "btn btn-success", attrs: { type: "submit" } },
+          [_vm._v("SALVAR")]
+        )
       ])
     ])
   }

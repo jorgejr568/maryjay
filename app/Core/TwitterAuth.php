@@ -17,8 +17,8 @@ trait TwitterAuth
     {
         $this->cb = Codebird::getInstance();
         $this->cb->setToken($this->getTwitterAuthCache()['token'],$this->getTwitterAuthCache()['secret']);
-        $this->cb->setConnectionTimeout(5000);
-        $this->cb->setTimeout(10000);
+        $this->cb->setConnectionTimeout(15000);
+        $this->cb->setTimeout(30000);
     }
 
     private function getTwitterAuthCache(){

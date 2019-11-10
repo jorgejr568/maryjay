@@ -15,7 +15,7 @@ class CreateTableDashboardTweets extends Migration
     {
         Schema::create('dashboard_tweets', function (Blueprint $table) {
             $table->unsignedBigInteger('dashboard_id')->index();
-            $table->string('tweet_id',100)->index();
+            $table->string('tweet_id',30)->index();
             $table
                 ->foreign('dashboard_id')
                 ->references('id')

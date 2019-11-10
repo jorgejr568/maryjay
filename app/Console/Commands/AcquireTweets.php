@@ -8,6 +8,7 @@ use App\Exceptions\TwitterRequestFailed;
 use App\Tweet;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 
 class AcquireTweets extends Command
 {
@@ -97,8 +98,21 @@ class AcquireTweets extends Command
                         // creating progressbar for terminal
                         $progress = $this->output->createProgressBar(count($res->statuses));
 
-                        foreach ($res->statuses as $status) {
-                            // parsing tweet created_at property to an Carbon object that we can handle easily | Sub hours because value comes in GMT
+                        $statuses = collect($res->statuses);
+
+                        $statusesInDatabase = DB
+                            ::table('tweets')
+                            ->select('id')
+                            ->whereIn('id',$statuses->pluck('id')->toArray())
+                            ->get()
+                            ->pluck('id')
+                            ->toArray();
+
+                        $statusesToInsert = [];
+
+                        foreach ($statuses as $status) {
+                            // parsing tweet created_at property to an Carbon object that we can handle easily
+                            // Sub hours because value comes in GMT
                             $tweetCreatedAt = Carbon::createFromTimeString($status->created_at)->subHours(3);
 
                             // checking if tweet created_at is less than $fromPeriod
@@ -109,15 +123,15 @@ class AcquireTweets extends Command
                             }
 
                             // checking if tweet not exists in database
-                            if (!Tweet::where('id', $status->id)->exists()) {
+                            if (!in_array($status->id,$statusesInDatabase)) {
                                 // inserting tweet into database
-                                $tweet = Tweet::create([
+                                $statusesToInsert[] = [
                                     'id' => $status->id,
                                     'created_at' => $tweetCreatedAt,
                                     'data' => json_encode($status),
                                     'user_id' => $status->user->id,
                                     'query' => $query
-                                ]);
+                                ];
                             }
 
                             // setting maxTweetId as current tweet id
@@ -126,6 +140,13 @@ class AcquireTweets extends Command
                             // adding unit to progressbar
                             $progress->advance();
                         }
+
+                        if(count($statusesToInsert) > 0) DB::table('tweets')->insert($statusesToInsert);
+                        $statusesToInsert = null;
+                        $statusesInDatabase = null;
+
+                        // finishing progress bar
+                        $progress->finish();
 
                         // checking if we must leave do while
                         if($breakDoWhile){
@@ -139,6 +160,7 @@ class AcquireTweets extends Command
                             * and then try this loop again using $continue control
                         */
                         if($e->getCode() == 429) {
+                            $this->alert("WAITING SOME TIME UNTIL API LIMIT FINISH");
                             sleep(60 * 5);
                             $continue = true;
                         }
@@ -149,9 +171,6 @@ class AcquireTweets extends Command
                          */
                         else throw new TwitterAuthFailed("Twitter Auth Failed",$e->getCode(),$e);
                     }
-
-                    // finishing progress bar
-                    $progress->finish();
 
                     /*
                      * if $continue, means that we reached limit and must try to request again

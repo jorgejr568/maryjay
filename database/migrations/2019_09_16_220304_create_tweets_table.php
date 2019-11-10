@@ -14,10 +14,10 @@ class CreateTweetsTable extends Migration
     public function up()
     {
         Schema::create('tweets', function (Blueprint $table) {
-            $table->string('id',100)->primary();
-            $table->string('user_id',100)->index();
+            $table->string('id',30)->primary();
+            $table->string('user_id',30)->index();
             $table->json('data')->nullable();
-            $table->string('query',50)->index();
+            $table->string('query',15)->index();
             $table->dateTime('created_at');
         });
     }

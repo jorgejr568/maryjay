@@ -81,7 +81,6 @@ class AcquireTweets extends Command
                 $maxTweetId = $maxTweetIdDefault;
                 do {
                     // Variable to control if has any errors on twitter request
-                    $continue = false;
 
                     try {
                         // doing twitter request
@@ -164,7 +163,6 @@ class AcquireTweets extends Command
                         if($e->getCode() == 429) {
                             $this->alert("WAITING SOME TIME UNTIL API LIMIT FINISH");
                             sleep(60 * 5);
-                            $continue = true;
                         }
 
                         /*
@@ -180,7 +178,7 @@ class AcquireTweets extends Command
                      * if count($res->statuses) == $count, means that last page wasn't reached yet, so we will try to
                      * request again, but with max_tweet_id updated value
                      */
-                } while ($continue || count($res->statuses) == $count);
+                } while (true);
             }
 
             // That's all folks

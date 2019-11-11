@@ -9,8 +9,8 @@
   color: white;
 }
 
-table.table-roll tbody {
-  max-height: 50px !important;
+.table-roll {
+  max-height: 500px !important;
   overflow-y: auto;
 }
 

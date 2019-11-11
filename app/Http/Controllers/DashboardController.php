@@ -6,6 +6,7 @@ use App\Http\Requests\DashboardRequest;
 use App\Dashboard;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class DashboardController extends Controller
 {
@@ -34,15 +35,17 @@ class DashboardController extends Controller
             'query' => $request->input('metadata_rule_query')
         ];
 
-        for($i = 0;$i<count($queries['metadata']);$i++){
-            if(
-                !empty($queries['metadata'][$i]) AND
-                !empty($queries['query'][$i])
-            ){
-                $metadatas[] = [
-                    'metadata' => $queries['metadata'][$i],
-                    'query' => $queries['query'][$i]
-                ];
+        if($queries['metadata'] ?? false) {
+            for ($i = 0; $i < count($queries['metadata']); $i++) {
+                if (
+                    !empty($queries['metadata'][$i]) AND
+                    !empty($queries['query'][$i])
+                ) {
+                    $metadatas[] = [
+                        'metadata' => $queries['metadata'][$i],
+                        'query' => $queries['query'][$i]
+                    ];
+                }
             }
         }
 
@@ -77,11 +80,27 @@ class DashboardController extends Controller
      * @param  \App\Dashboard  $dashboard
      * @return \Illuminate\Http\Response
      */
-    public function show(Dashboard $dashboard)
+    public function show(Dashboard $dashboard,Request $request)
     {
-        return view('dashboards.view',[
-            'dashboard' => $dashboard
-        ]);
+        if($request->has('download_gephy')){
+            return response()
+                ->file(storage_path('app/dashboards/'.$dashboard->id."-gephy.csv"),[
+                    'Content-type' => "text/csv",
+                    'Content-Disposition: ' => 'attachment; filename="'.Str::slug($dashboard->name).'.csv"\''
+                ]);
+        }
+        if($request->has('download_json')){
+            return response()
+                ->file(storage_path('app/dashboards/'.$dashboard->id."-tweets.json"),[
+                    'Content-type' => "application/json",
+                    'Content-Disposition: ' => 'attachment; filename="'.Str::slug($dashboard->name).'.json"\''
+                ]);
+        }
+        else {
+            return view('dashboards.view', [
+                'dashboard' => $dashboard
+            ]);
+        }
     }
 
     /**

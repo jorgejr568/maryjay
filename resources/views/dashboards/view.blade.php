@@ -1,21 +1,34 @@
 @extends('layouts.app')
 
 @section('content')
+    <style type="text/css">
 
-    <div class="container">
+    </style>
+    <div class="container-fluid">
         <div class="row justify-content-center">
-            <div class="col-md-10">
+            <div class="col-md-12">
                 <h2>{{ $dashboard->name }}</h2>
-
                 @if($dashboard->infos())
                     <div class="row">
+                        <div class="col-12 text-center">
+                            <a href="{{route('dashboards.show',['dashboard' => $dashboard->id,'download_gephy'])}}"
+                               class="btn btn-outline-success"
+                               download=""
+                            >DOWNLOAD GEPHY</a>
+                            <a href="{{route('dashboards.show',['dashboard' => $dashboard->id,'download_json'])}}"
+                               class="btn btn-outline-info"
+                               download=""
+                            >DOWNLOAD JSON</a>
+                        </div>
+                    </div>
+                    <div class="row mt-4">
                         <div class="col-4">
                             <div class="card">
                                 <div class="card-header">Palavras mais utilizadas</div>
 
                                 <div class="card-body">
-                                    <div class="table-responsive">
-                                        <table class="table table-roll table-bordered table-hover">
+                                    <div class="table-roll table-responsive">
+                                        <table class="table table-bordered table-hover">
                                             <tbody>
                                             @foreach($dashboard->infos()->most_user_words as $word)
                                                 <tr>
@@ -34,8 +47,8 @@
                                 <div class="card-header">Tweets mais retweetados</div>
 
                                 <div class="card-body">
-                                    <div class="table-responsive">
-                                        <table class="table table-roll table-bordered table-hover">
+                                    <div class="table-roll table-responsive">
+                                        <table class="table table-bordered table-hover">
                                             <tbody>
                                             @foreach($dashboard->infos()->most_rt_status as $status)
                                                 <tr>
@@ -54,8 +67,8 @@
                                 <div class="card-header">Tweets mais favoritados</div>
 
                                 <div class="card-body">
-                                    <div class="table-responsive">
-                                        <table class="table table-roll table-bordered table-hover">
+                                    <div class="table-roll table-responsive">
+                                        <table class="table table-bordered table-hover">
                                             <tbody>
                                             @foreach($dashboard->infos()->most_favorite_status as $status)
                                                 <tr>
@@ -77,8 +90,8 @@
                                 <div class="card-header">Lugares onde mais tweetam</div>
 
                                 <div class="card-body">
-                                    <div class="table-responsive">
-                                        <table class="table table-roll table-bordered table-hover">
+                                    <div class="table-roll table-responsive">
+                                        <table class="table table-bordered table-hover">
                                             <tbody>
                                             @foreach($dashboard->infos()->most_used_locations as $location)
                                                 <tr>
@@ -97,8 +110,8 @@
                                 <div class="card-header">Usuários com mais seguidores</div>
 
                                 <div class="card-body">
-                                    <div class="table-responsive">
-                                        <table class="table table-roll table-bordered table-hover">
+                                    <div class="table-roll table-responsive">
+                                        <table class="table table-bordered table-hover">
                                             <tbody>
                                             @foreach($dashboard->infos()->most_followed_users as $user)
                                                 <tr>
@@ -117,8 +130,8 @@
                                 <div class="card-header">Usuários mais favoritados</div>
 
                                 <div class="card-body">
-                                    <div class="table-responsive">
-                                        <table class="table table-roll table-bordered table-hover">
+                                    <div class="table-roll table-responsive">
+                                        <table class="table table-bordered table-hover">
                                             <tbody>
                                             @foreach($dashboard->infos()->most_favorites_users as $user)
                                                 <tr>

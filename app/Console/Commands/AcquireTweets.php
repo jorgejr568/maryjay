@@ -18,7 +18,7 @@ class AcquireTweets extends Command
      *
      * @var string
      */
-    protected $signature = 'acquire_tweets {--period=hour} {query*}';
+    protected $signature = 'acquire_tweets {--period=hour} {--max-tweet-id} {query*}';
 
     /**
      * The console command description.
@@ -66,6 +66,8 @@ class AcquireTweets extends Command
                     // Finishing process
             }
 
+            $maxTweetIdDefault = $this->option('max-tweet-id') ? $this->option('max-tweet-id') : null;
+
 
             // Foreach query passed as argument to command | globo havan natura
             foreach ($this->argument('query') as $query) {
@@ -76,7 +78,7 @@ class AcquireTweets extends Command
                 // Variable to control if we are getting only tweets until $fromPeriod
                 $breakDoWhile = false;
                 // Variable to paginate correctly twitter api
-                $maxTweetId = null;
+                $maxTweetId = $maxTweetIdDefault;
                 do {
                     // Variable to control if has any errors on twitter request
                     $continue = false;

@@ -149,6 +149,90 @@ class Dashboard extends Model
             storage_path('app/dashboards/'.$this->id.".json"),
             json_encode($data,JSON_PRETTY_PRINT)
         );
+
+        file_put_contents(
+            storage_path('app/dashboards/'.$this->id."-tweets.json"),
+            ""
+        );
+        $this->posProcessJsonFile();
+
+        file_put_contents(
+            storage_path('app/dashboards/'.$this->id."-gephy.csv"),
+            ""
+        );
+
+        $this->posProcessGephyFile();
+    }
+
+    private function posProcessJsonFile(){
+        $perPage = 500;
+        $tweets_query = DB
+            ::table('dashboard_tweets AS dt')
+            ->join('tweets AS t','t.id','=','dt.tweet_id')
+            ->select([
+                't.data'
+            ]);
+        $tweets = $tweets_query
+            ->paginate($perPage);
+        $lastPage = $tweets->lastPage();
+        $jsonFile = fopen(storage_path('app/dashboards/'.$this->id."-tweets.json"),'w+');
+
+        fwrite($jsonFile,'[');
+
+        for($page = 1;$page <= $lastPage;$page++){
+            if($page > 1){
+                $tweets = $tweets_query->simplePaginate($perPage,['*'],'page',$page);
+            }
+            $countItems = count($tweets->items());
+            $i = 1;
+            foreach ($tweets->items() as $tweet){
+                fwrite($jsonFile,$tweet->data);
+
+                if(
+                    !($page == $lastPage AND $i == $countItems)
+                ){
+                    fwrite($jsonFile,',');
+                }
+                $i++;
+            }
+        }
+        fwrite($jsonFile,']');
+        fclose($jsonFile);
+    }
+
+    private function posProcessGephyFile(){
+        $perPage = 500;
+        $tweets_query = DB
+            ::table('dashboard_tweets AS dt')
+            ->join('tweets AS t','t.id','=','dt.tweet_id')
+            ->select([
+                't.data->user->screen_name as target',
+                't.data->retweeted_status->user->screen_name as source'
+            ])
+            ->whereNotNull('t.data->retweeted_status->id');
+
+        $tweets = $tweets_query
+            ->paginate($perPage);
+        $lastPage = $tweets->lastPage();
+        $gephyFile = fopen(storage_path('app/dashboards/'.$this->id."-gephy.csv"),'w+');
+        fputcsv($gephyFile,[
+            'source',
+            'target'
+        ]);
+
+        for($page = 1;$page <= $lastPage;$page++){
+            if($page > 1){
+                $tweets = $tweets_query->simplePaginate($perPage,['*'],'page',$page);
+            }
+
+            foreach ($tweets->items() as $tweet){
+                fputcsv($gephyFile,[
+                    $tweet->source,
+                    $tweet->target
+                ]);
+            }
+        }
+        fclose($gephyFile);
     }
 
     private function posProcessMostUsedWords(){
@@ -200,18 +284,10 @@ class Dashboard extends Model
     }
 
     private function posProcessMostRTStatus($fromRT = false){
-        if($fromRT){
-            $fieldId = 't.data->retweeted_status->id';
-            $fieldText = 't.data->retweeted_status->text';
-            $fieldOrder = 't.data->retweeted_status->retweet_count';
-            $fieldOrderRaw = "'$.\"retweeted_status\".\"retweet_count\"'";
-
-        }else{
-            $fieldId = 't.data->id';
-            $fieldText = 't.data->text';
-            $fieldOrder = 't.data->retweet_count';
-            $fieldOrderRaw = "'$.\"retweet_count\"'";
-        }
+        $fieldId = 't.data->retweeted_status->id';
+        $fieldText = 't.data->retweeted_status->text';
+        $fieldOrder = 't.data->retweeted_status->retweet_count';
+        $fieldOrderRaw = "'$.\"retweeted_status\".\"retweet_count\"'";
 
         $tweets = DB
             ::table('dashboard_tweets AS dt')

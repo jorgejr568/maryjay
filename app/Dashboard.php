@@ -168,6 +168,7 @@ class Dashboard extends Model
         $perPage = 500;
         $tweets_query = DB
             ::table('dashboard_tweets AS dt')
+            ->where('dt.dashboard_id',$this->id)
             ->join('tweets AS t','t.id','=','dt.tweet_id')
             ->select([
                 't.data'
@@ -209,6 +210,7 @@ class Dashboard extends Model
                 't.data->user->screen_name as target',
                 't.data->retweeted_status->user->screen_name as source'
             ])
+            ->where('dt.dashboard_id',$this->id)
             ->whereNotNull('t.data->retweeted_status->id');
 
         $tweets = $tweets_query
@@ -241,6 +243,7 @@ class Dashboard extends Model
 
         $tweets_query = DB
             ::table('dashboard_tweets AS dt')
+            ->where('dt.dashboard_id',$this->id)
             ->join('tweets AS t','t.id','=','dt.tweet_id')
             ->select([
                 't.data->text as text'
@@ -291,6 +294,7 @@ class Dashboard extends Model
 
         $tweets = DB
             ::table('dashboard_tweets AS dt')
+            ->where('dt.dashboard_id',$this->id)
             ->join('tweets AS t','t.id','=','dt.tweet_id')
             ->select([
                 $fieldId.' as id',
@@ -315,6 +319,7 @@ class Dashboard extends Model
 
         $tweets = DB
             ::table('dashboard_tweets AS dt')
+            ->where('dt.dashboard_id',$this->id)
             ->join('tweets AS t','t.id','=','dt.tweet_id')
             ->select([
                 $fieldId.' as id',
@@ -340,6 +345,7 @@ class Dashboard extends Model
 
         $tweets = DB
             ::table('dashboard_tweets AS dt')
+            ->where('dt.dashboard_id',$this->id)
             ->join('tweets AS t','t.id','=','dt.tweet_id')
             ->select([
                 $fieldId.' as id',
@@ -371,6 +377,7 @@ class Dashboard extends Model
 
         $tweets = DB
             ::table('dashboard_tweets AS dt')
+            ->where('dt.dashboard_id',$this->id)
             ->join('tweets AS t','t.id','=','dt.tweet_id')
             ->select([
                 $fieldId.' as id',
@@ -401,6 +408,7 @@ class Dashboard extends Model
             DB::select("SELECT a.location,a.count FROM (".
             DB
             ::table('dashboard_tweets AS dt')
+            ->whereRaw("dt.dashboard_id = {$this->id}")
             ->join('tweets AS t','t.id','=','dt.tweet_id')
             ->select([
                 $fieldGroup." as location",

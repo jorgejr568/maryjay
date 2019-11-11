@@ -18,7 +18,7 @@ class AcquireTweets extends Command
      *
      * @var string
      */
-    protected $signature = 'acquire_tweets {--period=hour} {--max-tweet-id} {query*}';
+    protected $signature = 'acquire_tweets {--period=hour} {--max-tweet-id=} {query*}';
 
     /**
      * The console command description.

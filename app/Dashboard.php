@@ -47,7 +47,8 @@ class Dashboard extends Model
 
     protected $fillable = [
         'name',
-        'query'
+        'query',
+        "to_process"
     ];
 
     protected $infos = null;

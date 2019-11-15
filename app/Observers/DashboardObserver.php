@@ -27,7 +27,7 @@ class DashboardObserver
      */
     public function updated(Dashboard $searchDashboard)
     {
-        $searchDashboard->update(['to_process' => true]);
+//        $searchDashboard->update(['to_process' => true]);
     }
 
     /**

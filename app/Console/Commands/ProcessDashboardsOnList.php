@@ -38,7 +38,7 @@ class ProcessDashboardsOnList extends Command
      */
     public function handle()
     {
-        $dashboards = Dashboard::where('to_process',true)->toSql();
+        $dashboards = Dashboard::where('to_process',true)->get();
         /** @var Dashboard $dashboard */
         foreach ($dashboards as $dashboard){
             $dashboard->update(['to_process' => false]);

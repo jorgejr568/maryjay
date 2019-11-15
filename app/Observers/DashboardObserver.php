@@ -16,7 +16,7 @@ class DashboardObserver
      */
     public function created(Dashboard $searchDashboard)
     {
-        ProcessDashboard::dispatch($searchDashboard);
+        $searchDashboard->update(['to_process' => true]);
     }
 
     /**
@@ -27,7 +27,7 @@ class DashboardObserver
      */
     public function updated(Dashboard $searchDashboard)
     {
-        ProcessDashboard::dispatch($searchDashboard);
+        $searchDashboard->update(['to_process' => true]);
     }
 
     /**

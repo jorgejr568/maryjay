@@ -2,6 +2,8 @@
 
 namespace App\Console;
 
+use App\Console\Commands\AddDashboardToProcessList;
+use App\Console\Commands\ProcessDashboardsOnList;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -26,6 +28,10 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')
         //          ->hourly();
+
+        $schedule->call(AddDashboardToProcessList::class)->hourlyAt('40');
+
+        $schedule->call(ProcessDashboardsOnList::class)->everyFiveMinutes();
     }
 
     /**

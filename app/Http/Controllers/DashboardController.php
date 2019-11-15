@@ -68,7 +68,8 @@ class DashboardController extends Controller
     {
         $dashboard =  Dashboard::create([
             'name' => $request->input('name'),
-            'query' => json_encode($this->createQuery($request),JSON_PRETTY_PRINT)
+            'query' => json_encode($this->createQuery($request),JSON_PRETTY_PRINT),
+            'to_process' => true
         ]);
 
         return redirect()->route('dashboards.show',['dashboard' => $dashboard->id]);

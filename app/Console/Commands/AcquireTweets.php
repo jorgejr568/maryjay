@@ -131,7 +131,8 @@ class AcquireTweets extends Command
                                     'created_at' => $tweetCreatedAt,
                                     'data' => json_encode(Tweet::toV3($status)),
                                     'user_id' => $status->user->id,
-                                    'query' => $query
+                                    'query' => $query,
+                                    'v3' => true
                                 ];
                             }
 

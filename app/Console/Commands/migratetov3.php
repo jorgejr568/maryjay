@@ -43,7 +43,7 @@ class MigrateToV3 extends Command
 
         $perPage = (int) $this->option('per-page');
 
-        $tweetsQuery = DB::table('tweets')->select(['id','data']);
+        $tweetsQuery = DB::table('tweets')->where('v3',false)->select(['id','data']);
         $tweets = $tweetsQuery->paginate($perPage);
 
 
@@ -60,7 +60,8 @@ class MigrateToV3 extends Command
                 DB::table('tweets')->where('id',$tweet->id)->update([
                     'data' => json_encode(Tweet::toV3(
                         json_decode($tweet->data)
-                    ))
+                    )),
+                    'v3' => true
                 ]);
 
                 $progress->advance();

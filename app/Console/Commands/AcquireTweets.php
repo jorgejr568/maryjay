@@ -129,7 +129,7 @@ class AcquireTweets extends Command
                                 $statusesToInsert[] = [
                                     'id' => $status->id,
                                     'created_at' => $tweetCreatedAt,
-                                    'data' => json_encode($status),
+                                    'data' => json_encode(Tweet::toV3($status)),
                                     'user_id' => $status->user->id,
                                     'query' => $query
                                 ];

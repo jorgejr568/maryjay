@@ -54,7 +54,7 @@ class MigrateToV3 extends Command
 
         for($currentPage = 1;$currentPage <= $lastPage;$currentPage++) {
             if($currentPage > 1){
-                $tweet = $tweetsQuery->simplePaginate($perPage,['*'],'page',$currentPage);
+                $tweets = $tweetsQuery->simplePaginate($perPage,['*'],'page',$currentPage);
             }
             foreach ($tweets->items() as $tweet){
                 DB::table('tweets')->where('id',$tweet->id)->update([
